@@ -1,0 +1,16 @@
+table {
+	color: #000000;
+	border-collapse: collapse;
+	border-color: #808080;
+}
+
+
+th {
+	vertical-align: top;
+	padding: 5px;
+}
+
+td {
+	vertical-align: top;
+	padding: 5px;
+}
