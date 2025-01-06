@@ -1,4 +1,4 @@
 #!/bin/bash
 
 cp index.html ..
-cp css/* ../css/*
+cp css/* ../css/
