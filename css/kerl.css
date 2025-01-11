@@ -70,9 +70,10 @@ a:active {
 .toggle-button {
   font-weight: bold;
   color: maroon;
-  border: 1;
+  border: 1px solid #800000;
   padding: 2;
   margin: 2;
+  border-radius: 4px;
 }
 .toggle-button.selected {
   font-weight: bold;
