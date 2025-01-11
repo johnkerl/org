@@ -34,7 +34,7 @@ document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.
 <!-- ================================================================ -->
 <br/>
 
-<img src="/pix/jk2024.jpg" border=3 title="John Kerl head shot" alt="John Kerl head shot">
+<img src="/pix/jk2024b.jpg" border=3 title="John Kerl head shot" alt="John Kerl head shot">
 
 <br>
 <br>
@@ -56,58 +56,37 @@ document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.
 </div>
 
 <!-- ================================================================ -->
+<!--
+  This is a self-contained widget for error-text and cancel/X button.
+  We use Sliver's setErrorWidget to route top-level errors here.
+-->
+<span id="error-container" class="error" style="display: none">
+  <button
+    class=transparent
+    onClick='
+      document.getElementById("error-container").style.display = "none";
+      document.getElementById("error-text").innerHTML = "";
+    '
+  > &times; </button>
+  <span id="error-text"> </span>
+</span>
+
+<!-- ================================================================ -->
 <div style="text-align:center">
   <p>
 
-  <button
-    id="toggleable_about_button"
-    class="toggle-button"
-    onclick="toggler.expandUniquely('toggleable_about');"
-    href="javascript:;"
-  >About
-  </button>
-
-  <button
-    id="toggleable_writing_about_software_button"
-    class="toggle-button"
-    onclick="toggler.expandUniquely('toggleable_writing_about_software');"
-    href="javascript:;"
-  >Software
-  </button>
-
-  <button
-    id="toggleable_writing_about_math_button"
-    class="toggle-button"
-    onclick="toggler.expandUniquely('toggleable_writing_about_math');"
-    href="javascript:;"
-  >Math
-  </button>
-
-  <button
-    id="toggleable_writing_about_other_things_button"
-    class="toggle-button"
-    onclick="toggler.expandUniquely('toggleable_writing_about_other_things');"
-    href="javascript:;"
-  >Other things
-  </button>
-
-  <button
-    class="toggle-button"
-    onclick='toggler.expandAll()' href="javascript:;"
-  >Expand all
-  </button>
-
-  <button
-    class="toggle-button"
-    onclick='toggler.collapseAll()' href="javascript:;"
-  >Collapse all
-  </button>
+  <button id="about-button"                      class="toggle-button">About</button>
+  <button id="writing-about-software-button"     class="toggle-button">Software</button>
+  <button id="writing-about-math-button"         class="toggle-button">Math</button>
+  <button id="writing-about-other-things-button" class="toggle-button">Other things</button>
+  <button id="expand-all-button"                 class="toggle-button">Expand all</button>
+  <button id="collapse-all-button"               class="toggle-button">Collapse all</button>
 
   </p>
 </div>
 
 <!-- = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = -->
-<div id="toggleable_writing_about_other_things" style="display: none">
+<div id="writing-about-other-things-content" style="display: none">
 <p class="boldmaroon">
 Other things
 </p>
@@ -149,7 +128,7 @@ Other things
 </div>
 
 <!-- = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = -->
-<div id="toggleable_writing_about_software" style="display: none">
+<div id="writing-about-software-content" style="display: none">
 <p class="boldmaroon">
 Software
 </p>
@@ -219,7 +198,7 @@ Software
 
 <!-- = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = -->
 <p>
-<div id="toggleable_writing_about_math" style="display: none">
+<div id="writing-about-math-content" style="display: none">
 <p class="boldmaroon">
 Math
 </p>
@@ -284,7 +263,7 @@ Math
 </div>
 
 <!-- = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = -->
-<div id="toggleable_about" style="display: none">
+<div id="about-content" style="display: none">
 <p class="boldmaroon">
 About
 </p>
@@ -295,8 +274,8 @@ About
 <p> <span class="maroon">Managing complexity:</span> Software is a huge part of our lives, more than ever.  And, unlike
 the earliest days of computing, you don&rsquo;t need to be a programmer in order to use a computer.  Click a button and
 you&rsquo;re online chatting with someone across the world, and you don&rsquo;t have to know everything about how the
-video-chat frontend (let alone backend infra) works.  It&rsquo;s magic, and it just works.  But somebody &mdash; several
-somebodies &mdash; do need to make the magic happen in all its detail.  Organizations that own systems need them
+video-chat frontend (let alone backend infra) works.  It&rsquo;s magic, and it just works.  <b>But somebody &mdash; several
+somebodies &mdash; do need to make the magic happen in all its detail.</b>  Organizations that own systems need them
 to deliver value today, tomorrow, and the next day &mdash; and they need people like us to make that possible. Seeing
 (and advocating for) the amortized costs and benefits, both obvious and non-obvious, of our work over time is essential
 to how we define our value to the world.</p>
@@ -373,39 +352,64 @@ other forms of work do.  </p>
 </table>
 
 <!-- ================================================================ -->
-<script src="/jko-toggler/jko-toggler.js"></script>
-<script>
-  // Put this at the bottom of the page since its constructor scans the
-  // document's div tags to find the toggleables.
+<script type=module>
+  'use strict';
 
-  const buttonSelectedStyle = {
-    borderColor: 'maroon',
-    backgroundColor: 'white',
-    borderWidth: '1px',
-    borderStyle: 'solid',
-    borderRadius: '4px',
-  };
-  const buttonDeselectedStyle = {
-    borderColor: 'gray',
-    backgroundColor: '#f0f0f0',
-    borderWidth: '1px',
-    borderStyle: 'solid',
-    borderRadius: '4px',
-  };
+  import {
+    GenericElement,
+    URLAndPersistentNButtonToggler,
+    setErrorWidget,
+  } from "/sliver/stable/classes.js"
 
-  const toggler = new JKOToggler(
-    "toggleable_",
-    buttonSelectedStyle,
-    buttonDeselectedStyle,
-    {
-      'software' : 'toggleable_writing_about_software',
-      'math' : 'toggleable_writing_about_math',
-      'other_things' : 'toggleable_writing_about_other_things',
-      'about' : 'toggleable_about',
-      'all': 'all',
-      'none': 'none',
-    },
-  );
+  setErrorWidget("error-container", "error-text")
+
+  const widgets = {}
+  widgets.aboutContent       = new GenericElement("about-content")
+  widgets.softwareContent    = new GenericElement("writing-about-software-content")
+  widgets.mathContent        = new GenericElement("writing-about-math-content")
+  widgets.otherThingsContent = new GenericElement("writing-about-other-things-content")
+
+  widgets.toggler = new URLAndPersistentNButtonToggler(
+        {
+          "about-button": {
+            "text": "About",
+            "items": [ widgets.aboutContent ],
+            "callback": () => {},
+            "urlShorthand": "section1",
+          },
+          "writing-about-software-button": {
+            "text": "Software",
+            "items": [ widgets.softwareContent ],
+            "callback": () => {},
+            "urlShorthand": "section2",
+          },
+          "writing-about-math-button": {
+            "text": "Math",
+            "items": [ widgets.mathContent ],
+            "callback": () => {},
+            "urlShorthand": "section3",
+          },
+          "writing-about-other-things-button": {
+            "text": "Other things",
+            "items": [ widgets.otherThingsContent ],
+            "callback": () => {},
+            "urlShorthand": "section4",
+          },
+        },
+        {
+          "expand-all-button": {
+            "text": "Expand all",
+          },
+        },
+        {
+          "collapse-all-button": {
+            "text": "Collapse all",
+          },
+        },
+        "selected",   // CSS style
+        "deselected", // CSS style
+      )
+
 </script>
 <!-- ================================================================ -->
 
